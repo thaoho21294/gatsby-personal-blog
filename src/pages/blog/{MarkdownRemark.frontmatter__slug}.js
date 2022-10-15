@@ -4,21 +4,31 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image";
 import Layout from "../../components/layout";
 import Seo from "../../components/seo";
 
-const BlogPost = ({ data, children }) => {
-  const image = getImage(data.mdx.frontmatter.hero_image);
+const BlogPost = ({ data }) => {
+  const {
+    markdownRemark: {
+      frontmatter: { hero_image, title, date, hero_image_alt },
+      html,
+    },
+  } = data;
+  const image = getImage(hero_image);
 
   return (
-    <Layout pageTitle={data.mdx.frontmatter.title}>
-      <p>Posted: {data.mdx.frontmatter.date}</p>
-      <GatsbyImage image={image} alt={data.mdx.frontmatter.hero_image_alt} />
-      {children}
+    <Layout pageTitle={title}>
+      <p>Posted: {date}</p>
+      <GatsbyImage image={image} alt={hero_image_alt} />
+      <div
+        className="blog-post-content"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     </Layout>
   );
 };
 
 export const query = graphql`
   query ($id: String) {
-    mdx(id: { eq: $id }) {
+    markdownRemark(id: { eq: $id }) {
+      html
       frontmatter {
         title
         date(formatString: "MMMM D, YYYY")
@@ -35,6 +45,8 @@ export const query = graphql`
   }
 `;
 
-export const Head = ({ data }) => <Seo title={data.mdx.frontmatter.title} />;
+export const Head = ({ data }) => (
+  <Seo title={data.markdownRemark.frontmatter.title} />
+);
 
 export default BlogPost;

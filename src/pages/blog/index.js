@@ -6,7 +6,7 @@ import Seo from "../../components/seo";
 const BlogPage = ({ data }) => {
   return (
     <Layout pageTitle="My Blog Posts">
-      {data.allMdx.nodes.map((node) => (
+      {data.allMarkdownRemark.edges.map(({ node }) => (
         <article key={node.id}>
           <h2>
             <Link to={`/blog/${node.frontmatter.slug}`}>
@@ -22,14 +22,16 @@ const BlogPage = ({ data }) => {
 
 export const query = graphql`
   query {
-    allMdx(sort: { fields: frontmatter___date, order: DESC }) {
-      nodes {
-        frontmatter {
-          date(formatString: "MMMM D, YYYY")
-          title
-          slug
+    allMarkdownRemark(sort: { fields: frontmatter___date, order: DESC }) {
+      edges {
+        node {
+          frontmatter {
+            date(formatString: "MMMM D, YYYY")
+            title
+            slug
+          }
+          id
         }
-        id
       }
     }
   }
